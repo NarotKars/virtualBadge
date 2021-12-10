@@ -1,14 +1,12 @@
-﻿using DataAccess.Models;
+﻿using DataAccess.Exceptions;
+using DataAccess.Models;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccess
@@ -28,6 +26,16 @@ namespace DataAccess
 
         public async Task<Token> GetToken(string password, string userName = "", string email = "")
         {
+            if (string.IsNullOrWhiteSpace(userName) && string.IsNullOrWhiteSpace(email))
+            {
+                throw new ArgumentException("Either the userName or email must be provided during the login");
+            }
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new ArgumentException("Password is not optional during login");
+            }
+
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
             var body = new Dictionary<string, string>
             {
@@ -47,30 +55,13 @@ namespace DataAccess
             }
             else
             {
-                throw new Exception(response.Content.ReadAsStringAsync().Result);
+                throw new KeyCloakException(response.Content.ReadAsStringAsync().Result);
             }
+
+            if (token == null || string.IsNullOrWhiteSpace(token.access_token))
+                throw new KeyCloakException("Empty token");
+
             return token;          
-        }
-
-        public async Task<Token> GetServiceToken()
-        {
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
-            var body = new Dictionary<string, string>
-            {
-                { "client_id", configuration["Client:Id"] },
-                { "client_secret", configuration["Client:Secret"] },
-                {"grant_type", "client_credentials" }
-            };
-
-            var response = await client.PostAsync(configuration["Paths:Token"], new FormUrlEncodedContent(body));
-            string res = await response.Content.ReadAsStringAsync();
-
-            Token token = null;
-            if (response.IsSuccessStatusCode)
-            {
-                token = JsonConvert.DeserializeObject<Token>(res);
-            }
-            return token;
         }
     }
 }

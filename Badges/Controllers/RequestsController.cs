@@ -8,8 +8,6 @@ using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Badges.Controllers
 {
@@ -20,28 +18,18 @@ namespace Badges.Controllers
         private readonly IRequests requests;
         private readonly IMapper mapper;
 
-        public RequestsController(IRequests requests, IMapper mapper)
-        {
-            this.requests = requests;
-            this.mapper = mapper;
-        }
+        public RequestsController(IRequests requests, IMapper mapper) => (this.requests, this.mapper) = (requests, mapper);
 
         [Authorize]
         [HttpPost("Create")]
-        public ActionResult<int> CreateRequest(APIRequest request)
+        public int CreateRequest(APIRequest request)
         {
             int newRequestId = 0;
-            try
-            {
-                newRequestId = requests.CreateRequest(mapper.Map<Request>(request));
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            newRequestId = requests.CreateRequest(mapper.Map<Request>(request));
 
             if (newRequestId == 0)
-                return BadRequest("An error occured");
+                throw new Exception("Unknown exception while creating badge request");
+
             return newRequestId;
         }
 
@@ -49,14 +37,7 @@ namespace Badges.Controllers
         [HttpPut("Accept")]
         public ActionResult AcceptRequest(int id)
         {
-            try
-            {
-                requests.AcceptRequest(id);
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            requests.AcceptRequest(id);
             return Ok("The request is successfully accepted");
         }
 
@@ -64,69 +45,35 @@ namespace Badges.Controllers
         [HttpPut("Decline")]
         public ActionResult DeclineRequest(int id)
         {
-            try
-            {
-                requests.DeclineRequest(id);
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            requests.DeclineRequest(id);
             return Ok("The request is successfully declined");
         }
 
         [Authorize]
         [HttpGet("Received")]
-        public ActionResult<List<RequestCredentials>> GetReceivedBadges()
+        public List<RequestCredentials> GetReceivedBadges()
         {
             string accessToken = Request.Headers[HeaderNames.Authorization];
             var handler = new JwtSecurityTokenHandler();
-            List<RequestCredentials> receivedBadges;
-            try
-            {
-                receivedBadges = requests.GetReceivedBadges(handler.ReadJwtToken(accessToken.Split(" ")[1]).Subject);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            return receivedBadges;
+            return requests.GetReceivedBadges(handler.ReadJwtToken(accessToken.Split(" ")[1]).Subject);
         }
 
         [Authorize]
         [HttpGet("myRequests")]
-        public ActionResult<List<RequestCredentials>> GetMyRequests()
+        public List<RequestCredentials> GetMyRequests()
         {
             string accessToken = Request.Headers[HeaderNames.Authorization];
             var handler = new JwtSecurityTokenHandler();
-            List<RequestCredentials> myRequests;
-            try
-            {
-                myRequests = requests.GetMyRequests(handler.ReadJwtToken(accessToken.Split(" ")[1]).Subject);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            return myRequests;
+            return requests.GetMyRequests(handler.ReadJwtToken(accessToken.Split(" ")[1]).Subject);
         }
 
         [Authorize]
         [HttpGet("pending")]
-        public ActionResult<List<RequestCredentials>> GetPendingRequests()
+        public List<RequestCredentials> GetPendingRequests()
         {
             string accessToken = Request.Headers[HeaderNames.Authorization];
             var handler = new JwtSecurityTokenHandler();
-            List<RequestCredentials> pendingRequests;
-            try
-            {
-                pendingRequests = requests.GetPendingRequests(handler.ReadJwtToken(accessToken.Split(" ")[1]).Subject);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            return pendingRequests;
+            return requests.GetPendingRequests(handler.ReadJwtToken(accessToken.Split(" ")[1]).Subject);
         }
     }
 }

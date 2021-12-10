@@ -10,7 +10,7 @@ namespace DataAccess
     public interface IUsers
     {
         public Task<Token> Login(string password, string userName = "", string email = "");
-        public Task<Token> Register(string userName, string email, string password, string firstName, string lastName);
+        public Task<Token> Register(User user, string password);
         public List<User> SearchUsers(string name, string userId);
         public Task<User> GetUser(string token);
     }
