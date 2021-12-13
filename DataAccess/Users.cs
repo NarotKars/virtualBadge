@@ -99,6 +99,7 @@ namespace DataAccess
                     user.FirstName = dataReader.GetString(dataReader.GetOrdinal("FirstName"));
                     user.LastName = dataReader.GetString(dataReader.GetOrdinal("LastName"));
                     user.UserName = dataReader.GetString(dataReader.GetOrdinal("UserName"));
+                    user.BadgeQuantity = dataReader.GetInt32(dataReader.GetOrdinal("BadgeQuantity"));
                 }
             }
             return Task.FromResult(user);
@@ -123,6 +124,7 @@ namespace DataAccess
                 int colUserName = dataReader.GetOrdinal("userName");
                 int colEmail = dataReader.GetOrdinal("email");
                 int colAlreadyRequested = dataReader.GetOrdinal("alreadyRequested");
+                int colBadgeQuantity = dataReader.GetOrdinal("badgeQuantity");
                 while (dataReader.Read())
                 {
                     users.Add(new User
@@ -132,7 +134,8 @@ namespace DataAccess
                         LastName = dataReader.GetString(colLastName),
                         UserName = dataReader.GetString(colUserName),
                         Email = dataReader.GetString(colEmail),
-                        AlreadyRequested = dataReader.GetInt32(colAlreadyRequested)
+                        AlreadyRequested = dataReader.GetInt32(colAlreadyRequested),
+                        BadgeQuantity = dataReader.GetInt32(colBadgeQuantity)
                     });
                 }
             }

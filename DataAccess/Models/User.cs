@@ -8,5 +8,6 @@
         public string UserName { get; set; }
         public string Email { get; set; }
         public int AlreadyRequested { get; set; }
+        public int BadgeQuantity { get; set; }
     }
 }
