@@ -41,7 +41,7 @@ namespace Badges.Controllers
             var response = users.GetUser(handler.ReadJwtToken(accessToken.Split(" ")[1]).Subject);
             if (!string.IsNullOrWhiteSpace(response.Result.UserName))
                 return response.Result;
-            throw new KeyCloakException("Unexpected error: Empty user");
+            throw new KeyCloakException("Unexpected error: Empty user", 500);
         }
 
         [Authorize]

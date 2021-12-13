@@ -11,6 +11,10 @@ namespace DataAccess.Exceptions
 
     public class KeyCloakException : Exceptions
     {
-        public KeyCloakException(string message) : base(message) { }
+        public int statusCode;
+
+        public KeyCloakException(string message, int statusCode) : base(message) {
+            this.statusCode = statusCode;
+        }
     }
 }

@@ -32,9 +32,14 @@ namespace Badges
                         context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                         await context.Response.WriteAsync(e.Message);
                     }
-                    else if(exception.GetType().Name == nameof(SqlException) || exception.GetType().Name == nameof(KeyCloakException))
+                    else if(exception.GetType().Name == nameof(SqlException))
                     {
                         context.Response.StatusCode = 500;
+                        await context.Response.WriteAsync(e.Message);
+                    }
+                    else if(exception.GetType().Name == nameof(KeyCloakException))
+                    {
+                        context.Response.StatusCode = ((KeyCloakException)exception).statusCode;
                         await context.Response.WriteAsync(e.Message);
                     }
                 }

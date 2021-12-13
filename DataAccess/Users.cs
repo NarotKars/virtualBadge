@@ -72,11 +72,11 @@ namespace DataAccess
             }
             else
             {
-                throw new KeyCloakException(response.Content.ReadAsStringAsync().Result);
+                throw new KeyCloakException(response.Content.ReadAsStringAsync().Result, (int)response.StatusCode);
             }
 
             if (newUserToken == null || string.IsNullOrWhiteSpace(newUserToken.access_token))
-                throw new KeyCloakException("Empty token");
+                throw new KeyCloakException("Empty token", 500);
 
             return newUserToken;
         }

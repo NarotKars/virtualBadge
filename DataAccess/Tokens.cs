@@ -55,11 +55,11 @@ namespace DataAccess
             }
             else
             {
-                throw new KeyCloakException(response.Content.ReadAsStringAsync().Result);
+                throw new KeyCloakException(response.Content.ReadAsStringAsync().Result, (int)response.StatusCode);
             }
 
             if (token == null || string.IsNullOrWhiteSpace(token.access_token))
-                throw new KeyCloakException("Empty token");
+                throw new KeyCloakException("Empty token", 500);
 
             return token;          
         }
