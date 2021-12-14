@@ -57,7 +57,7 @@ namespace DataAccess
 
         public List<RequestCredentials> GetReceivedBadges(string userId)
         {
-            if (!string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId))
                 throw new ArgumentException("user id is empty");
 
             return GetRequests(Status.Accepted, userId);
@@ -65,7 +65,7 @@ namespace DataAccess
 
         public List<RequestCredentials> GetMyRequests(string userId)
         {
-            if (!string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId))
                 throw new ArgumentException("user id is empty");
 
             return GetRequests(Status.Pending, null, userId);
@@ -73,7 +73,7 @@ namespace DataAccess
 
         public List<RequestCredentials> GetPendingRequests(string userId)
         {
-            if (!string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId))
                 throw new ArgumentException("user id is empty");
 
             return GetRequests(Status.Pending, userId);
