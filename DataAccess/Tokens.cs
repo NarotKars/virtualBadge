@@ -61,7 +61,39 @@ namespace DataAccess
             if (token == null || string.IsNullOrWhiteSpace(token.access_token))
                 throw new KeyCloakException("Empty token", 500);
 
-            return token;          
+            return token;
+        }
+
+        public async Task<Token> GetTokenFromRefreshToken(string refreshToken)
+        {
+            if(string.IsNullOrWhiteSpace(refreshToken))
+                throw new ArgumentException("Empty refresh token");
+
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+            var body = new Dictionary<string, string>
+            {
+                { "client_id", configuration["Client:Id"] },
+                { "grant_type", "refresh_token" },
+                {"refresh_token",  refreshToken}
+            };
+
+            var response = await client.PostAsync(configuration["Paths:Token"], new FormUrlEncodedContent(body));
+            string res = await response.Content.ReadAsStringAsync();
+
+            Token token = null;
+            if (response.IsSuccessStatusCode)
+            {
+                token = JsonConvert.DeserializeObject<Token>(res);
+            }
+            else
+            {
+                throw new KeyCloakException(response.Content.ReadAsStringAsync().Result, (int)response.StatusCode);
+            }
+
+            if (token == null || string.IsNullOrWhiteSpace(token.access_token))
+                throw new KeyCloakException("Empty token", 500);
+
+            return token;
         }
     }
 }

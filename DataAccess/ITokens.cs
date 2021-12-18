@@ -9,5 +9,6 @@ namespace DataAccess
     public interface ITokens
     {
         public Task<Token> GetToken(string password, string userName = "", string email = "");
+        public Task<Token> GetTokenFromRefreshToken(string accessToken);
     }
 }
