@@ -60,7 +60,7 @@ namespace DataAccess
             if (string.IsNullOrEmpty(userId))
                 throw new ArgumentException("user id is empty");
 
-            return GetRequests(Status.Accepted, userId);
+            return GetRequests(userId);
         }
 
         public List<RequestCredentials> GetMyRequests(string userId)
@@ -68,25 +68,16 @@ namespace DataAccess
             if (string.IsNullOrEmpty(userId))
                 throw new ArgumentException("user id is empty");
 
-            return GetRequests(Status.Pending, null, userId);
+            return GetRequests(null, userId);
         }
 
-        public List<RequestCredentials> GetPendingRequests(string userId)
-        {
-            if (string.IsNullOrEmpty(userId))
-                throw new ArgumentException("user id is empty");
-
-            return GetRequests(Status.Pending, userId);
-        }
-
-        private List<RequestCredentials> GetRequests(Status status, string requesterId = null, string giverId = null)
+        private List<RequestCredentials> GetRequests(string requesterId = null, string giverId = null)
         {
             List<RequestCredentials> requests = new List<RequestCredentials>();
 
             using SqlConnection connection = new SqlConnection(ConnectionManager.ConnectionString);
             using SqlCommand command = new SqlCommand("GetRequests", connection);
             command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@status", status);
             command.Parameters.AddWithValue("@requesterId", requesterId);
             command.Parameters.AddWithValue("@giverId", giverId);
             connection.Open();
@@ -100,6 +91,7 @@ namespace DataAccess
                 int colGiverUserName = dataReader.GetOrdinal("giverUserName");
                 int colRequesterUserName = dataReader.GetOrdinal("requesterUserName");
                 int colQuantity = dataReader.GetOrdinal("quantity");
+                int colStatus = dataReader.GetOrdinal("status");
                 while (dataReader.Read())
                 {
                     Request request = new Request();
@@ -107,6 +99,7 @@ namespace DataAccess
                     request.RequesterId = dataReader.GetString(colRequesterId);
                     request.GiverId = dataReader.GetString(colGiverId);
                     request.Quantity = dataReader.GetInt32(colQuantity);
+                    request.Status = dataReader.GetInt32(colStatus);
                     requests.Add(new RequestCredentials
                     {
                         Request = request,

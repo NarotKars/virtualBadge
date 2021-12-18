@@ -66,14 +66,5 @@ namespace Badges.Controllers
             var handler = new JwtSecurityTokenHandler();
             return requests.GetMyRequests(handler.ReadJwtToken(accessToken.Split(" ")[1]).Subject);
         }
-
-        [Authorize]
-        [HttpGet("pending")]
-        public List<RequestCredentials> GetPendingRequests()
-        {
-            string accessToken = Request.Headers[HeaderNames.Authorization];
-            var handler = new JwtSecurityTokenHandler();
-            return requests.GetPendingRequests(handler.ReadJwtToken(accessToken.Split(" ")[1]).Subject);
-        }
     }
 }
