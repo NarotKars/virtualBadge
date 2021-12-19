@@ -32,7 +32,7 @@ namespace DataAccess
         {
             UpdateRequestStatus(id, Status.Accepted);
             using SqlConnection connection = new SqlConnection(ConnectionManager.ConnectionString);
-            using SqlCommand command = new SqlCommand("[UpdateBadgeQuantityByRequestId]", connection);
+            using SqlCommand command = new SqlCommand("UpdateBadgeQuantityByRequestId", connection);
             command.CommandType = CommandType.StoredProcedure;
             connection.Open();
             command.Parameters.AddWithValue("@requestId", id);

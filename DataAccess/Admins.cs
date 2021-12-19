@@ -27,5 +27,16 @@ namespace DataAccess
             command.Parameters.AddWithValue("@days", days);
             command.ExecuteNonQuery();
         }
+
+        public void AddBadgesToUser(string userId, int quantity)
+        {
+            using SqlConnection connection = new SqlConnection(ConnectionManager.ConnectionString);
+            using SqlCommand command = new SqlCommand("UpdateBadgeQuantityByUserId", connection);
+            command.CommandType = CommandType.StoredProcedure;
+            connection.Open();
+            command.Parameters.AddWithValue("@userId", userId);
+            command.Parameters.AddWithValue("@quantity", quantity);
+            command.ExecuteNonQuery();
+        }
     }
 }
