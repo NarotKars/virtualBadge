@@ -25,10 +25,6 @@ namespace DataAccess
             newRequestId.DbType = DbType.Int32;
             command.Parameters.Add(newRequestId);
             command.ExecuteNonQuery();
-
-
-
-
             return (int)newRequestId.Value;
         }
 
@@ -36,7 +32,7 @@ namespace DataAccess
         {
             UpdateRequestStatus(id, Status.Accepted);
             using SqlConnection connection = new SqlConnection(ConnectionManager.ConnectionString);
-            using SqlCommand command = new SqlCommand("UpdateBadgeQuantity", connection);
+            using SqlCommand command = new SqlCommand("[UpdateBadgeQuantityByRequestId]", connection);
             command.CommandType = CommandType.StoredProcedure;
             connection.Open();
             command.Parameters.AddWithValue("@requestId", id);
