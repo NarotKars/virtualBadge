@@ -59,7 +59,7 @@ namespace Badges.Controllers
         }
 
         [Authorize]
-        [HttpGet("myRequests")]
+        [HttpGet("MyRequests")]
         public List<RequestCredentials> GetMyRequests()
         {
             string accessToken = Request.Headers[HeaderNames.Authorization];

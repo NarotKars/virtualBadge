@@ -46,6 +46,11 @@ namespace Badges
                 };
             });
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("SuperAdmin", policy => policy.RequireClaim("clientRoles", "[SuperAdmin]"));
+            });
+
             services.AddControllers();
             services.AddTransient<IUsers, Users>();
             services.AddTransient<ITokens, Tokens>();
@@ -53,15 +58,35 @@ namespace Badges
             services.AddScoped<IUsers, Users>();
             services.AddScoped<ITokens, Tokens>();
             services.AddScoped<IRequests, Requests>();
+            services.AddScoped<IAdmins, Admins>();
             services.AddHttpClient();
 
             services.AddAutoMapper(typeof(Startup));
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Badges", Version = "v1" });
+                c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                {
+                    Description = "Standard Authorization header using the Bearer scheme. Example: \'bearer {token}\'",
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT"
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            if (env.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Badges v1"));
+            }
+            
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()

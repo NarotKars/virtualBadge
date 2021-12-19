@@ -25,6 +25,10 @@ namespace DataAccess
             newRequestId.DbType = DbType.Int32;
             command.Parameters.Add(newRequestId);
             command.ExecuteNonQuery();
+
+
+
+
             return (int)newRequestId.Value;
         }
 
